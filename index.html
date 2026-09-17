@@ -611,42 +611,19 @@
             font-weight: 500;
         }
 
-        /* ===== Responsive — Tablets (≤768px) ===== */
+        /* ===== Responsive — Tablets & Phones (≤768px) ===== */
         @media (max-width: 768px) {
             body {
-                padding: 16px 12px 40px;
-            }
-
-            .landing-content {
-                padding: 32px 28px 40px;
-            }
-
-            .landing-title {
-                font-size: 1.75rem;
-            }
-
-            .form-card {
-                padding: 36px 28px;
-            }
-
-            .success-card {
-                padding: 48px 28px;
-            }
-        }
-
-        /* ===== Responsive — Phones (≤480px) ===== */
-        @media (max-width: 480px) {
-            body {
-                padding: 8px 6px 32px;
+                padding: 12px 8px 32px;
             }
 
             /* Landing */
             .landing-header-image {
-                height: 180px;
+                height: 200px;
             }
 
             .landing-content {
-                padding: 24px 20px 32px;
+                padding: 28px 24px 36px;
             }
 
             .landing-title {
@@ -660,6 +637,7 @@
             }
 
             .start-btn {
+                display: flex;
                 width: 100%;
                 justify-content: center;
                 padding: 16px 24px;
@@ -669,7 +647,7 @@
 
             /* Form card */
             .form-card {
-                padding: 24px 18px;
+                padding: 28px 20px;
                 border-radius: 12px;
             }
 
@@ -702,7 +680,7 @@
                 margin-left: 6px;
             }
 
-            /* Inputs — minimum 16px to prevent iOS zoom */
+            /* Inputs — 16px min to prevent iOS zoom */
             .form-input {
                 padding: 14px 14px;
                 font-size: 16px;
@@ -742,6 +720,7 @@
 
             /* Submit button — full width on mobile */
             .submit-btn {
+                display: flex;
                 width: 100%;
                 justify-content: center;
                 padding: 16px 24px;
@@ -752,7 +731,7 @@
 
             /* Success page */
             .success-card {
-                padding: 36px 20px;
+                padding: 36px 24px;
                 border-radius: 12px;
             }
 
@@ -778,6 +757,7 @@
             }
 
             .new-response-btn {
+                display: flex;
                 width: 100%;
                 justify-content: center;
                 padding: 14px 24px;
@@ -797,6 +777,29 @@
                 font-size: 0.85rem;
                 max-width: 94%;
                 border-radius: 8px;
+            }
+        }
+
+        /* ===== Responsive — Small Phones (≤480px) ===== */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px 6px 28px;
+            }
+
+            .landing-header-image {
+                height: 180px;
+            }
+
+            .landing-content {
+                padding: 24px 20px 32px;
+            }
+
+            .form-card {
+                padding: 24px 16px;
+            }
+
+            .success-card {
+                padding: 32px 18px;
             }
         }
 
