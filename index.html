@@ -1143,31 +1143,38 @@
             submitBtn.disabled = true;
 
             const form = document.getElementById('permission-form');
-            const formData = new FormData(form);
+            const originalFormData = new FormData(form);
+            const submitData = new FormData();
 
-            // Build submission data for Formsubmit.co
-            const data = {
-                '_subject': 'نموذج إستئذان جديد - مركز مشايق الصحي',
-                '_template': 'table',
-                'الإسم': formData.get('name') || 'غير محدد',
-                'الرقم الوظيفي': formData.get('employee_id') || 'غير محدد',
-                'القسم': formData.get('department') || 'غير محدد',
-                'التاريخ': formData.get('date') || 'غير محدد',
-                'وقت الخروج': formData.get('exit_time') || 'غير محدد',
-                'مرفق': fileInput.files.length > 0 ? fileInput.files[0].name : 'لا يوجد مرفق',
-                'وقت العودة': formData.get('return_time') || 'غير محدد',
-                'سبب التأخير في حالة التأخر عن العمل': formData.get('late_reason') || 'لا يوجد',
-                'سبب الخروج': formData.get('exit_reason') || 'غير محدد'
-            };
+            // Build submission data for Formsubmit.co with Arabic labels
+            submitData.append('_subject', 'نموذج إستئذان جديد - مركز مشايق الصحي');
+            submitData.append('_template', 'table');
+            submitData.append('الإسم', originalFormData.get('name') || 'غير محدد');
+            submitData.append('الرقم الوظيفي', originalFormData.get('employee_id') || 'غير محدد');
+            submitData.append('القسم', originalFormData.get('department') || 'غير محدد');
+            submitData.append('التاريخ', originalFormData.get('date') || 'غير محدد');
+            submitData.append('وقت الخروج', originalFormData.get('exit_time') || 'غير محدد');
+            
+            if (fileInput.files.length > 0) {
+                // Append the actual file object, not just its name
+                submitData.append('مرفق', fileInput.files[0]);
+            } else {
+                submitData.append('مرفق', 'لا يوجد مرفق');
+            }
+
+            submitData.append('وقت العودة', originalFormData.get('return_time') || 'غير محدد');
+            submitData.append('سبب التأخير في حالة التأخر عن العمل', originalFormData.get('late_reason') || 'لا يوجد');
+            submitData.append('سبب الخروج', originalFormData.get('exit_reason') || 'غير محدد');
 
             try {
                 const response = await fetch(FORM_ENDPOINT, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json'
+                        // Do NOT set Content-Type header for FormData, 
+                        // the browser automatically sets it to multipart/form-data with the correct boundary
                     },
-                    body: JSON.stringify(data)
+                    body: submitData
                 });
 
                 const result = await response.json();
