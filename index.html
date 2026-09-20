@@ -1156,10 +1156,13 @@
             submitData.append('وقت الخروج', originalFormData.get('exit_time') || 'غير محدد');
             
             if (fileInput.files.length > 0) {
-                // Append the actual file object, not just its name
-                submitData.append('مرفق', fileInput.files[0]);
+                // Use English key 'attachment' for the file to avoid issues with FormSubmit.co
+                // and pass the filename explicitly.
+                submitData.append('attachment', fileInput.files[0], fileInput.files[0].name);
+                // We can also send the Arabic label as a normal text field so it shows in the table
+                submitData.append('المرفق_اسم', fileInput.files[0].name);
             } else {
-                submitData.append('مرفق', 'لا يوجد مرفق');
+                submitData.append('المرفق', 'لا يوجد مرفق');
             }
 
             submitData.append('وقت العودة', originalFormData.get('return_time') || 'غير محدد');
