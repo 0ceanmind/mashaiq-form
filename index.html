@@ -887,7 +887,14 @@
             <h1 class="form-title">مركز مشايق الصحي</h1>
             <p class="form-notice">When you submit this form, it will not automatically collect your details like name and email address unless you provide it yourself.</p>
 
-            <form id="permission-form" onsubmit="handleSubmit(event)">
+            <!-- Hidden iframe for form submission to prevent page reload -->
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+            <form id="permission-form" method="POST" enctype="multipart/form-data" target="hidden_iframe" onsubmit="handleSubmit(event)">
+                <!-- Formsubmit Configuration -->
+                <input type="hidden" name="_subject" value="نموذج إستئذان جديد - مركز مشايق الصحي">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
 
                 <!-- 1. الإسم -->
                 <div class="form-group">
@@ -895,7 +902,7 @@
                         <span class="field-number">1</span>
                         الإسم
                     </label>
-                    <input type="text" class="form-input" id="field-name" name="name" placeholder="أدخل إجابتك" required>
+                    <input type="text" class="form-input" id="field-name" name="الإسم" placeholder="أدخل إجابتك" required>
                 </div>
 
                 <!-- 2. الرقم الوظيفي -->
@@ -904,7 +911,7 @@
                         <span class="field-number">2</span>
                         الرقم الوظيفي
                     </label>
-                    <input type="text" class="form-input" id="field-employee-id" name="employee_id" placeholder="أدخل إجابتك">
+                    <input type="text" class="form-input" id="field-employee-id" name="الرقم الوظيفي" placeholder="أدخل إجابتك">
                 </div>
 
                 <!-- 3. القسم -->
@@ -913,7 +920,7 @@
                         <span class="field-number">3</span>
                         القسم
                     </label>
-                    <input type="text" class="form-input" id="field-department" name="department" placeholder="أدخل إجابتك">
+                    <input type="text" class="form-input" id="field-department" name="القسم" placeholder="أدخل إجابتك">
                 </div>
 
                 <!-- 4. التاريخ -->
@@ -922,7 +929,7 @@
                         <span class="field-number">4</span>
                         التاريخ
                     </label>
-                    <input type="date" class="form-input" id="field-date" name="date">
+                    <input type="date" class="form-input" id="field-date" name="التاريخ">
                 </div>
 
                 <!-- 5. وقت الخروج -->
@@ -931,7 +938,7 @@
                         <span class="field-number">5</span>
                         وقت الخروج
                     </label>
-                    <input type="time" class="form-input" id="field-exit-time" name="exit_time">
+                    <input type="time" class="form-input" id="field-exit-time" name="وقت الخروج">
                 </div>
 
                 <!-- 6. Upload relevant documents here -->
@@ -941,7 +948,8 @@
                         Upload relevant documents here
                     </label>
                     <div class="file-upload-area" id="file-upload-area">
-                        <input type="file" id="field-file" name="document" accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav">
+                        <!-- Use English 'attachment' for file to ensure it's processed properly by FormSubmit -->
+                        <input type="file" id="field-file" name="attachment" accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav">
                         <div class="upload-icon">
                             <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
                         </div>
@@ -963,7 +971,7 @@
                         <span class="field-number">7</span>
                         وقت العودة
                     </label>
-                    <input type="time" class="form-input" id="field-return-time" name="return_time">
+                    <input type="time" class="form-input" id="field-return-time" name="وقت العودة">
                 </div>
 
                 <!-- 8. سبب التأخير في حالة التأخر عن العمل -->
@@ -972,7 +980,7 @@
                         <span class="field-number">8</span>
                         سبب التأخير في حالة التأخر عن العمل
                     </label>
-                    <input type="text" class="form-input" id="field-late-reason" name="late_reason" placeholder="أدخل إجابتك">
+                    <input type="text" class="form-input" id="field-late-reason" name="سبب التأخير في حالة التأخر عن العمل" placeholder="أدخل إجابتك">
                 </div>
 
                 <!-- 9. سبب الخروج -->
@@ -981,7 +989,7 @@
                         <span class="field-number">9</span>
                         سبب الخروج
                     </label>
-                    <input type="text" class="form-input" id="field-exit-reason" name="exit_reason" placeholder="أدخل إجابتك">
+                    <input type="text" class="form-input" id="field-exit-reason" name="سبب الخروج" placeholder="أدخل إجابتك">
                 </div>
 
                 <!-- Submit Button -->
@@ -1134,66 +1142,37 @@
             }, 4000);
         }
 
-        // ===== Form Submission =====
-        async function handleSubmit(event) {
-            event.preventDefault();
+        // ===== Form Submission using Hidden Iframe =====
+        let formSubmitted = false;
+        
+        document.getElementById('hidden_iframe').addEventListener('load', function() {
+            if (formSubmitted) {
+                showSuccess();
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                formSubmitted = false;
+            }
+        });
+
+        function handleSubmit(event) {
+            // We DO NOT use event.preventDefault() here.
+            // We want the browser to natively submit the multipart form to the target="hidden_iframe"
             
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.classList.add('loading');
             submitBtn.disabled = true;
 
-            const form = document.getElementById('permission-form');
-            const originalFormData = new FormData(form);
-            const submitData = new FormData();
-
-            // Build submission data for Formsubmit.co with Arabic labels
-            submitData.append('_subject', 'نموذج إستئذان جديد - مركز مشايق الصحي');
-            submitData.append('_template', 'table');
-            submitData.append('الإسم', originalFormData.get('name') || 'غير محدد');
-            submitData.append('الرقم الوظيفي', originalFormData.get('employee_id') || 'غير محدد');
-            submitData.append('القسم', originalFormData.get('department') || 'غير محدد');
-            submitData.append('التاريخ', originalFormData.get('date') || 'غير محدد');
-            submitData.append('وقت الخروج', originalFormData.get('exit_time') || 'غير محدد');
+            // Dynamically set the action URL based on test mode
+            const urlParams = new URLSearchParams(window.location.search);
+            const isTestMode = urlParams.get('test') === 'true';
+            const targetEmail = isTestMode ? 'craptostudio@gmail.com' : 'almashaiqhc@gmail.com';
             
-            if (fileInput.files.length > 0) {
-                // Use English key 'attachment' for the file to avoid issues with FormSubmit.co
-                // and pass the filename explicitly.
-                submitData.append('attachment', fileInput.files[0], fileInput.files[0].name);
-                // We can also send the Arabic label as a normal text field so it shows in the table
-                submitData.append('المرفق_اسم', fileInput.files[0].name);
-            } else {
-                submitData.append('المرفق', 'لا يوجد مرفق');
-            }
-
-            submitData.append('وقت العودة', originalFormData.get('return_time') || 'غير محدد');
-            submitData.append('سبب التأخير في حالة التأخر عن العمل', originalFormData.get('late_reason') || 'لا يوجد');
-            submitData.append('سبب الخروج', originalFormData.get('exit_reason') || 'غير محدد');
-
-            try {
-                const response = await fetch(FORM_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json'
-                        // Do NOT set Content-Type header for FormData, 
-                        // the browser automatically sets it to multipart/form-data with the correct boundary
-                    },
-                    body: submitData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showSuccess();
-                } else {
-                    showToast('حدث خطأ أثناء الإرسال. حاول مرة أخرى.', 'error');
-                }
-            } catch (error) {
-                console.error('Submission error:', error);
-                showToast('حدث خطأ في الاتصال. تحقق من اتصال الإنترنت وحاول مرة أخرى.', 'error');
-            } finally {
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-            }
+            const form = document.getElementById('permission-form');
+            // IMPORTANT: use the standard FormSubmit endpoint, not the /ajax/ one!
+            form.action = `https://formsubmit.co/${targetEmail}`;
+            
+            formSubmitted = true;
         }
 
         // ===== Set Today's Date =====
