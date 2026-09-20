@@ -1010,7 +1010,14 @@
         // ===== Formsubmit.co Configuration =====
         // Zero-config email delivery — no signup required!
         // On first submission, Formsubmit sends a verification email to activate.
-        const FORM_ENDPOINT = 'https://formsubmit.co/ajax/almashaiqhc@gmail.com';
+        const urlParams = new URLSearchParams(window.location.search);
+        const isTestMode = urlParams.get('test') === 'true';
+        const targetEmail = isTestMode ? 'craptostudio@gmail.com' : 'almashaiqhc@gmail.com';
+        const FORM_ENDPOINT = `https://formsubmit.co/ajax/${targetEmail}`;
+
+        if (isTestMode) {
+            console.log('Running in Test Mode: Emails will be sent to ' + targetEmail);
+        }
 
         // ===== Page Navigation =====
         function showForm() {
